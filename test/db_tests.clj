@@ -6,3 +6,5 @@
 (deftest one
   (is (= 1 1)))
 
+(defn -main []
+  (run-tests))
