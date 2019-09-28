@@ -1,9 +1,12 @@
-{:paths ["src"]}
-{:deps
+
+{
+ :paths ["src"]
+ :deps
  {
   compojure {:mvn/version "1.6.1"}
   ring {:mvn/version "1.7.1"}
   ring/ring-defaults {:mvn/version "0.3.2"}
   hiccup {:mvn/version "2.0.0-alpha2"}
   buddy {:mvn/version "2.0.0"}
-  }}
+
+  com.novemberain/monger {:mvn/version "3.5.0"}}}
