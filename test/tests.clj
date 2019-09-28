@@ -1,10 +1,10 @@
 (ns tests
   (:require [clojure.test :refer :all]
-            [dbtest]
+            [db-test]
             )
   )
 
 (defn -main []
 
-  (run-tests 'dbtest)
+  (run-tests 'db-test)
   )

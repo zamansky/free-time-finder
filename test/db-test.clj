@@ -1,4 +1,4 @@
-(ns dbtest
+(ns db-test
   (:require [db :as db]
             [clojure.test :refer :all])
   )
