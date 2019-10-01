@@ -33,16 +33,6 @@
 ;; Database stuff
 
 
-(defn dbtest[] ;; localhost, default port
-
-
-  (let [conn (mg/connect)
-        db   (mg/get-db conn "monger-test")
-        oid  (ObjectId.)
-        doc  {:first_name "John" :last_name "Lennon"}]
-    (mc/insert db "documents" (merge doc {:_id oid})))
-  )
-
 (defn add-user [email password first last]
   " use (.getN on the result to see how many changed)"
   (let [conn (mg/connect)
@@ -59,12 +49,23 @@
     ))
 
 
+(defn get-user [email]
+  (let [conn (mg/connect)
+        db (mg/get-db conn "monger-test")
+        result (mc/find-maps db "documents" {:email email})
+        ]
+    (first result)
+    ))
+
 ;; authentication stuff
 
+(defn authenticate [username password]
+
+  )
 ;; check credentials
 ;; if credentials, then build token
 ;; maybe check authorized
 
 
 (defn -main []
-  (println "IN db.clj"))
+(println "IN db.clj"))
