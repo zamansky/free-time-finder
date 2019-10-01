@@ -1,7 +1,10 @@
 (ns db
   (:require [monger.core :as mg ]
             [monger.collection :as mc]
-            [monger.conversion :refer [from-db-object]])
+            [monger.conversion :refer [from-db-object]]
+            [buddy.sign.jwt :as jwt ]
+            [clj-time.core :as time]
+            )
   (:import org.bson.types.ObjectId))
 
 
@@ -9,6 +12,20 @@
 (def conn (mg/connect))
 (def db (mg/get-db conn "monger-test"))
 
+
+
+;; buddy / jwt stuff
+(defonce secret "this is a secret")
+
+(defn generate-jwt [email seconds]
+  (jwt/sign {:user email :exp (time/plus (time/now) (time/seconds seconds))} secret)
+  )
+
+;; raises exception if invalid 
+;; (jwt/unsign cred secret) 
+
+
+;; Database stuff
 
 
 (defn dbtest[] ;; localhost, default port
@@ -35,3 +52,6 @@
              )
       (catch Exception e 0))
     ))
+
+(defn -main []
+  (println "IN db.clj"))
