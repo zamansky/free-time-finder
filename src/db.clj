@@ -17,12 +17,17 @@
 ;; buddy / jwt stuff
 (defonce secret "this is a secret")
 
-(defn generate-jwt [email seconds]
-  (jwt/sign {:user email :exp (time/plus (time/now) (time/seconds seconds))} secret)
+(defn generate-jwt [payload seconds secret]
+  (jwt/sign {:payload payload :exp (time/plus (time/now) (time/seconds seconds))} secret)
   )
 
-;; raises exception if invalid 
-;; (jwt/unsign cred secret) 
+
+(defn decode-jwt [token secret]
+  (try
+    (:payload (jwt/unsign token secret))
+    (catch Exception e nil)
+    )
+  )
 
 
 ;; Database stuff
@@ -52,6 +57,14 @@
              )
       (catch Exception e 0))
     ))
+
+
+;; authentication stuff
+
+;; check credentials
+;; if credentials, then build token
+;; maybe check authorized
+
 
 (defn -main []
   (println "IN db.clj"))
