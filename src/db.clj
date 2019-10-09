@@ -59,13 +59,14 @@
 
 ;; authentication stuff
 
-(defn authenticate [username password]
-
+(defn authenticate [email password]
+  (let user [get-user email])
   )
+
 ;; check credentials
 ;; if credentials, then build token
 ;; maybe check authorized
 
 
 (defn -main []
-(println "IN db.clj"))
+  (println "IN db.clj"))
