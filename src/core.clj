@@ -25,21 +25,20 @@
 (defn decode-token
   [token]
   (try (jwt/unsign token secret)
-       (catch Exception e nil))
-  )
+       (catch Exception e nil)))
 
 
 (defn is-token-valid [token]
   (not (not (decode-token token))))
 
 (def lifespan 120)
-(defn authenticate-user [email password]
-          (if (and
+
+(defn authenticate-user-get-token [email password]
+  (if (and
        (= email "zamansky")
        (= password "zpass") )
-        (generate-token {:email email} lifespan)
-    nil
-    ))
+    (generate-token {:email email} lifespan)
+    nil))
 
 ;;---------------------------- Buddy JWT End ----------------------
 
@@ -68,9 +67,7 @@
           response (if protected? (handle-protected req handler)
                        (handler req))
           ]
-      (clojure.pprint/pprint response)
-      response))
-  )
+      response)))
 
 ;;---------------------------- middleware End ----------------------
 
@@ -91,14 +88,12 @@
 (defn login [ {:keys [:form-params] :as req} ]
   (let [ email (get  form-params "email")
         password (get  form-params "password")
-        payload (authenticate-user email password)
+        payload (authenticate-user-get-token email password)
         resp (-> (ring.util.response/response "")
                  (ring.util.response/header "token" payload)
                  (ring.util.response/status (if payload 200 401))
                  )]
-    (clojure.pprint/pprint form-params)
-    resp
-    ))    
+    resp))    
 
 (defn api-call [ {:keys [:headers] :as req}]
   (print "IN API-CALL")
