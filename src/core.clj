@@ -6,42 +6,8 @@
    [ring.middleware.defaults :refer [wrap-defaults api-defaults site-defaults]]
    [ring.middleware.reload :refer [wrap-reload]]
    [hiccup.core :as hiccup]
-
-   [buddy.sign.jwt :as jwt]
-   [clj-time.core :as time]
-
+   [user-management :as user]
    ))
-
-
-;;---------------------------- Buddy JWT Start ----------------------
-
-(def secret "this is my secret")
-
-(defn generate-token
-  "Return sig or empty string if user / pass combo invalid"
-  [payload lifespan-seconds]
-  (jwt/sign {:payload payload :exp (time/plus (time/now) (time/seconds lifespan-seconds))} secret))
-
-(defn decode-token
-  [token]
-  (try (jwt/unsign token secret)
-       (catch Exception e nil)))
-
-
-(defn is-token-valid [token]
-  (not (not (decode-token token))))
-
-(def lifespan 120)
-
-(defn authenticate-user-get-token [email password]
-  (if (and
-       (= email "zamansky")
-       (= password "zpass") )
-    (generate-token {:email email} lifespan)
-    nil))
-
-;;---------------------------- Buddy JWT End ----------------------
-
 
 
 ;;---------------------------- middleware Start ----------------------
@@ -52,7 +18,7 @@
   (let [btoken (get headers "authorization")
         token (try (get (clojure.string/split  btoken #" ") 1)
                    (catch Exception e ""))
-        payload (decode-token token)
+        payload (user/decode-token token)
         body (if payload (:body (handler req)) "")
         resp (-> (ring.util.response/response body)
                  (ring.util.response/header "token" token)
@@ -88,7 +54,7 @@
 (defn login [ {:keys [:form-params] :as req} ]
   (let [ email (get  form-params "email")
         password (get  form-params "password")
-        payload (authenticate-user-get-token email password)
+        payload (user/authenticate-user-get-token email password)
         resp (-> (ring.util.response/response "")
                  (ring.util.response/header "token" payload)
                  (ring.util.response/status (if payload 200 401))
