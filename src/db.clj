@@ -11,17 +11,17 @@
 (def db (mg/get-db conn "monger-test"))
 
 
+(def dbname "monger-test")
 
-
-(defn add-user [email password first last]
+(defn add-base-user [email password]
   " use (.getN on the result to see how many changed)"
   (let [conn (mg/connect)
         db (mg/get-db conn "monger-test")
         oid  (ObjectId.)
         ]
     (try 
-      (.getN (mc/update db "documents" {:last_name "smith"}
-                        {:email email :password password :last last :first first :_id oid}
+      (.getN (mc/update db "documents" {:email email}
+                        {:email email :password password :_id oid}
                         {:upsert true}
                         )
              )
@@ -29,6 +29,9 @@
     ))
 
 
+(defn update-user [{:keys [:email] :as payload}]
+  nil
+  )
 (defn get-user [email]
   (let [conn (mg/connect)
         db (mg/get-db conn "monger-test")
