@@ -10,7 +10,7 @@
    [buddy.sign.jwt :as jwt]
    [clj-time.core :as time]
 
-   [monger.core :as mg ]))
+   ))
 
 
 ;;---------------------------- Buddy JWT Start ----------------------
@@ -34,36 +34,16 @@
 
 (def lifespan 120)
 (defn authenticate-user [email password]
-  (if (and
+          (if (and
        (= email "zamansky")
        (= password "zpass") )
-    (generate-token {:email email} lifespan)
+        (generate-token {:email email} lifespan)
     nil
     ))
 
-
-
-;; (defn login [req]
-;;   (println (:params req))
-;;   (let [params (:params req)
-;;         pass (:pass params)
-;;         user (:user params)
-;;         sig (generate-signature user pass)
-;;         resp (ring.util.response/response "")
-;;         resp (ring.util.response/header  resp "token" sig)
-;;         resp (cond
-;;                (or (= user "") (= pass "")) (ring.util.response/status resp 400)
-;;                (= sig "") (ring.util.response/status resp 401)
-
-;;                :else (ring.util.response/status resp 200)
-;;                )
-;;         ]
-;;     resp
-;;     ))
-
-
-
 ;;---------------------------- Buddy JWT End ----------------------
+
+
 
 ;;---------------------------- middleware Start ----------------------
 
@@ -124,24 +104,13 @@
   (print "IN API-CALL")
   "<h1>SECRET API CALL</h1>")
 
-;; (defn api-call [ {:keys [:headers] :as req}]
-;;   (let [btoken (get headers "authorization")
-;;         token (try (get (clojure.string/split  btoken #" ") 1)
-;;                    (catch Exception e ""))
-;;         payload (decode-token token)
-;;         resp (-> (ring.util.response/response "<h1>HEllo</h1>")
-;;                  (ring.util.response/header "token" token)
-;;                  (ring.util.response/status (if payload 200 401))
-;;                  )]
-;;     resp))
-
 
 (defroutes myroutes
-(GET "/" [] index)
-(POST "/login" [] login)
-(GET "/api-call" [] api-call)
-(GET "/z" [] "<h1>ZZZZ</h1>")
-(route/not-found "<h1>Page not found</h1>"))
+  (GET "/" [] index)
+  (POST "/login" [] login)
+  (GET "/api-call" [] api-call)
+  (GET "/z" [] "<h1>ZZZZ</h1>")
+  (route/not-found "<h1>Page not found</h1>"))
 
 
 (def myapp
