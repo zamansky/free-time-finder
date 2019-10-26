@@ -2,8 +2,6 @@
   (:require [monger.core :as mg ]
             [monger.collection :as mc]
             [monger.conversion :refer [from-db-object]]
-            [buddy.sign.jwt :as jwt ]
-            [clj-time.core :as time]
             )
   (:import org.bson.types.ObjectId))
 
@@ -13,24 +11,6 @@
 (def db (mg/get-db conn "monger-test"))
 
 
-
-;; buddy / jwt stuff
-(defonce secret "this is a secret")
-
-(defn generate-jwt [payload seconds secret]
-  (jwt/sign {:payload payload :exp (time/plus (time/now) (time/seconds seconds))} secret)
-  )
-
-
-(defn decode-jwt [token secret]
-  (try
-    (:payload (jwt/unsign token secret))
-    (catch Exception e nil)
-    )
-  )
-
-
-;; Database stuff
 
 
 (defn add-user [email password first last]
@@ -56,16 +36,6 @@
         ]
     (first result)
     ))
-
-;; authentication stuff
-
-(defn authenticate [email password]
-  (let user [get-user email])
-  )
-
-;; check credentials
-;; if credentials, then build token
-;; maybe check authorized
 
 
 (defn -main []
