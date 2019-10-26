@@ -9,4 +9,8 @@
   hiccup {:mvn/version "2.0.0-alpha2"}
   buddy {:mvn/version "2.0.0"}
 
-  com.novemberain/monger {:mvn/version "3.5.0"}}}
+  com.novemberain/monger {:mvn/version "3.5.0"}}
+ :aliases
+ {:test {:extra-paths ["test"]}}
+
+ }
