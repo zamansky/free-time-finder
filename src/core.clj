@@ -32,11 +32,12 @@
 (defn is-token-valid [token]
   (not (not (decode-token token))))
 
+(def lifespan 120)
 (defn authenticate-user [email password]
   (if (and
        (= email "zamansky")
        (= password "zpass") )
-    (generate-token {:email email} 60)
+    (generate-token {:email email} lifespan)
     nil
     ))
 
@@ -63,16 +64,48 @@
 
 
 ;;---------------------------- Buddy JWT End ----------------------
+
+;;---------------------------- middleware Start ----------------------
+
+(def protected-routes ["/api-call" "/z"])
+
+(defn handle-protected [ {:keys [:headers] :as req} handler]
+  (let [btoken (get headers "authorization")
+        token (try (get (clojure.string/split  btoken #" ") 1)
+                   (catch Exception e ""))
+        payload (decode-token token)
+        body (if payload (:body (handler req)) "")
+        resp (-> (ring.util.response/response body)
+                 (ring.util.response/header "token" token)
+                 (ring.util.response/status (if payload 200 401))
+                 )]
+    resp))
+
+(defn wrap-protected-routes [handler]
+  (fn [req]
+    (let [uri (:uri req)
+          protected? (some #(= % uri) protected-routes)
+          response (if protected? (handle-protected req handler)
+                       (handler req))
+          ]
+      (clojure.pprint/pprint response)
+      response))
+  )
+
+;;---------------------------- middleware End ----------------------
+
+
+
 (defn -main []
-  (println "HELLO"))
+(println "HELLO"))
 
 
 (defn index [req]
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body  (hiccup/html [:h1 "Hello Wld from H"])
-   }
-  )
+{:status 200
+ :headers {"Content-Type" "text/html"}
+ :body  (hiccup/html [:h1 "Hello Wld from H"])
+ }
+)
 
 
 (defn login [ {:keys [:form-params] :as req} ]
@@ -88,31 +121,36 @@
     ))    
 
 (defn api-call [ {:keys [:headers] :as req}]
-  (let [btoken (get headers "authorization")
-        token (try (get (clojure.string/split  btoken #" ") 1)
-                   (catch Exception e ""))
-        payload (decode-token token)
-        resp (-> (ring.util.response/response "<h1>HEllo</h1>")
-                 (ring.util.response/header "token" token)
-                 (ring.util.response/status (if payload 200 401))
-                 )]
-    resp))
+  (print "IN API-CALL")
+  "<h1>SECRET API CALL</h1>")
+
+;; (defn api-call [ {:keys [:headers] :as req}]
+;;   (let [btoken (get headers "authorization")
+;;         token (try (get (clojure.string/split  btoken #" ") 1)
+;;                    (catch Exception e ""))
+;;         payload (decode-token token)
+;;         resp (-> (ring.util.response/response "<h1>HEllo</h1>")
+;;                  (ring.util.response/header "token" token)
+;;                  (ring.util.response/status (if payload 200 401))
+;;                  )]
+;;     resp))
 
 
 (defroutes myroutes
-  (GET "/" [] index)
-  (POST "/login" [] login)
-  (GET "/api-call" [] api-call)
-  (GET "/z" [] "<h1>ZZZZ</h1>")
-  (route/not-found "<h1>Page not found</h1>"))
+(GET "/" [] index)
+(POST "/login" [] login)
+(GET "/api-call" [] api-call)
+(GET "/z" [] "<h1>ZZZZ</h1>")
+(route/not-found "<h1>Page not found</h1>"))
 
 
-                       (def myapp
-                         (-> myroutes
-                             (wrap-defaults api-defaults)
-                             wrap-reload
-                             ))
-                       (defonce server (jetty/run-jetty #'myapp {:port 8080 :join? false}))
-                       ;; (.stop server) and (.start server)
+(def myapp
+(-> myroutes
+    (wrap-defaults api-defaults)
+    wrap-reload
+    wrap-protected-routes
+    ))
+(defonce server (jetty/run-jetty #'myapp {:port 8080 :join? false}))
+;; (.stop server) and (.start server)
 
-                       (.start server)
+(.start server)
