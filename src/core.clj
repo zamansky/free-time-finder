@@ -6,6 +6,7 @@
    [ring.middleware.defaults :refer [wrap-defaults api-defaults site-defaults]]
    [ring.middleware.reload :refer [wrap-reload]]
    [hiccup.core :as hiccup]
+   [ring.middleware.json :refer [wrap-json-response]]
    [user-management :as user]
    ))
 
@@ -51,14 +52,15 @@
 )
 
 
-(defn login [ {:keys [:form-params] :as req} ]
-  (let [ email (get  form-params "email")
-        password (get  form-params "password")
+(defn login [ {:keys [:params] :as req} ]
+  (let [ email (:email params)
+        password (:password params)
         payload (user/authenticate-user-get-token email password)
         resp (-> (ring.util.response/response "")
                  (ring.util.response/header "token" payload)
                  (ring.util.response/status (if payload 200 401))
                  )]
+    (clojure.pprint/pprint params)
     resp))    
 
 (defn api-call [ {:keys [:headers] :as req}]
@@ -75,11 +77,13 @@
 
 
 (def myapp
-(-> myroutes
-    (wrap-defaults api-defaults)
-    wrap-reload
-    wrap-protected-routes
-    ))
+  (-> myroutes
+      (wrap-defaults api-defaults)
+      wrap-reload
+      ring.middleware.params/wrap-params
+      ring.middleware.keyword-params/wrap-keyword-params
+      wrap-protected-routes
+      ))
 (defonce server (jetty/run-jetty #'myapp {:port 8080 :join? false}))
 ;; (.stop server) and (.start server)
 
