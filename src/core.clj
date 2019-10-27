@@ -56,7 +56,7 @@
   (let [ email (:email params)
         password (:password params)
         payload (user/authenticate-user-get-token email password)
-        resp (-> (ring.util.response/response "")
+        resp (-> (ring.util.response/response {:email email})
                  (ring.util.response/header "token" payload)
                  (ring.util.response/status (if payload 200 401))
                  )]
@@ -82,6 +82,7 @@
       wrap-reload
       ring.middleware.params/wrap-params
       ring.middleware.keyword-params/wrap-keyword-params
+      wrap-json-response
       wrap-protected-routes
       ))
 (defonce server (jetty/run-jetty #'myapp {:port 8080 :join? false}))
