@@ -24,7 +24,7 @@
 (defn is-token-valid [token]
   (not (not (decode-token token))))
 
-(def lifespan 120)
+(def lifespan 480)
 
 (defn authenticate-user-get-token [email password]
   (let [user (db/get-user email)]
@@ -36,5 +36,6 @@
 
 ;;---------------------------- Buddy JWT End ----------------------
 
-
+(defn get-user [email]
+  (db/get-user email))
 

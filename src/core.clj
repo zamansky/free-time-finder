@@ -53,7 +53,7 @@
 
 
 (defn login [ {:keys [:params] :as req} ]
-  (let [ email (:email params)
+  (let [email (:email params)
         password (:password params)
         payload (user/authenticate-user-get-token email password)
         resp (-> (ring.util.response/response {:email email})
@@ -67,15 +67,17 @@
   (print "IN API-CALL")
   "<h1>SECRET API CALL</h1>")
 
-(defn get-user [ {:keys [:headers :params] :as req}]
-  (let [email (:email params)
-        payload (db/get-user email)
+(defn get-user [ {:keys [:headers] :as req}]
+  (let [btoken (get headers "authorization")
+        token (try (get (clojure.string/split  btoken #" ") 1)
+                   (catch Exception e ""))
+        decoded-token (user/decode-token token)
+        email (:email (:payload decoded-token))
+        payload (user/get-user email)
         resp (-> (ring.util.response/response payload)
                  (ring.util.response/status 200))
         ]
-    (print "getting user")
-    (print email)
-    (print payload)
+    (clojure.pprint/pprint decoded-token)
     resp
     ))
 

@@ -12,12 +12,10 @@ authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoieiJ9LCJle
 POST http://localhost:8080/login
 content-type: application/x-www-form-urlencoded
 
-email=z&password=zz
+email=z@z.com&password=z
 #
 
 #
 GET http://localhost:8080/get-user
 content-type: application/x-www-form-urlencoded
-authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoieiJ9LCJleHAiOjE1NzI3MjUwMTV9.3YetC0C_DkOpn_Ws0wv5eR_2ga1Lz9sgod0YR7fhl8Q
-
-email=z&password=zpass
+authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiekB6LmNvbSJ9LCJleHAiOjE1NzI3MjY1NTZ9.T2Yus9wJ9ZT4I8Rn6hLgtWAMNXtjyLxidvMcdVc5WJ4
