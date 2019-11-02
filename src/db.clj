@@ -55,8 +55,9 @@
   (let [conn (mg/connect)
         db (mg/get-db conn db-name)
         result (mc/find-maps db "users" {:email email})
+        result (dissoc (first result) :_id)
         ]
-    (first result)
+    result
     ))
 
 

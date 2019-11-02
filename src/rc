@@ -13,3 +13,10 @@ POST http://localhost:8080/login
 content-type: application/x-www-form-urlencoded
 
 email=zamansky&password=zpass
+
+
+#
+GET http://localhost:8080/get-user
+content-type: application/x-www-form-urlencoded
+
+email=z&password=zpass
