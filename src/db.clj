@@ -8,20 +8,32 @@
 
 
 (def conn (mg/connect))
-(def db (mg/get-db conn "monger-test"))
+(def db-name "monger-test")
+(def db (mg/get-db conn db-name))
 
+(def empty-user-map
+  {:email  ""
+   :first  ""
+   :last ""
+   :resume ""
+   :skills {}
+   :classees {}
+   })
 
-(def dbname "monger-test")
 
 (defn add-base-user [email password]
   " use (.getN on the result to see how many changed)"
   (let [conn (mg/connect)
-        db (mg/get-db conn "monger-test")
+        db (mg/get-db conn db-name)
         oid  (ObjectId.)
+        payload empty-user-map
+        payload (assoc payload :email email)
+        payload (assoc payload :password password)
+        payload (assoc payload :_id oid)
         ]
     (try 
-      (.getN (mc/update db "documents" {:email email}
-                        {:email email :password password :_id oid}
+      (.getN (mc/update db "users" {:email email}
+                        payload
                         {:upsert true}
                         )
              )
@@ -30,16 +42,23 @@
 
 
 (defn update-user [{:keys [:email] :as payload}]
-  nil
-  )
+  (let [conn (mg/connect)
+        db (mg/get-db conn db-name)
+        obj (mc/update db "users" {:email email} payload {:multi false})
+        result (.getN obj)        
+        ]
+    result
+    ))
+
+
 (defn get-user [email]
   (let [conn (mg/connect)
-        db (mg/get-db conn "monger-test")
-        result (mc/find-maps db "documents" {:email email})
+        db (mg/get-db conn db-name)
+        result (mc/find-maps db "users" {:email email})
         ]
     (first result)
     ))
 
 
 (defn -main []
-  (println "IN db.clj"))
+(println "IN db.clj"))
