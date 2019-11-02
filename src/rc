@@ -6,17 +6,18 @@ GET http://localhost:8080
 
 #
 GET http://localhost:8080/api-call
-authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoiemFtYW5za3kifSwiZXhwIjoxNTcyMDUwMTI5fQ.PuTylNDjCch3vBe7bxnUoFm9WXzmTQhmUSvVciwWmMA
+authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoieiJ9LCJleHAiOjE1NzI3MjUwMTV9.3YetC0C_DkOpn_Ws0wv5eR_2ga1Lz9sgod0YR7fhl8Q
 
 #
 POST http://localhost:8080/login
 content-type: application/x-www-form-urlencoded
 
-email=zamansky&password=zpass
-
+email=z&password=zz
+#
 
 #
 GET http://localhost:8080/get-user
 content-type: application/x-www-form-urlencoded
+authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXlsb2FkIjp7ImVtYWlsIjoieiJ9LCJleHAiOjE1NzI3MjUwMTV9.3YetC0C_DkOpn_Ws0wv5eR_2ga1Lz9sgod0YR7fhl8Q
 
 email=z&password=zpass

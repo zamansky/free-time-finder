@@ -27,11 +27,12 @@
 (def lifespan 120)
 
 (defn authenticate-user-get-token [email password]
-  (if (and
-       (= email "zamansky")
-       (= password "zpass") )
-    (generate-token {:email email} lifespan)
-    nil))
+  (let [user (db/get-user email)]
+    (if (and
+         (= email (:email user))
+         (= password (:password user)) )
+      (generate-token {:email email} lifespan)
+      nil)))
 
 ;;---------------------------- Buddy JWT End ----------------------
 

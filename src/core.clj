@@ -13,7 +13,7 @@
 
 ;;---------------------------- middleware Start ----------------------
 
-(def protected-routes ["/api-call" "/z"])
+(def protected-routes ["/get-user" "/api-call" "/z" ])
 
 (defn handle-protected [ {:keys [:headers] :as req} handler]
   (let [btoken (get headers "authorization")
@@ -67,10 +67,23 @@
   (print "IN API-CALL")
   "<h1>SECRET API CALL</h1>")
 
+(defn get-user [ {:keys [:headers :params] :as req}]
+  (let [email (:email params)
+        payload (db/get-user email)
+        resp (-> (ring.util.response/response payload)
+                 (ring.util.response/status 200))
+        ]
+    (print "getting user")
+    (print email)
+    (print payload)
+    resp
+    ))
+
 
 (defroutes myroutes
   (GET "/" [] index)
   (POST "/login" [] login)
+  (GET "/get-user" [] get-user)
   (GET "/api-call" [] api-call)
   (GET "/z" [] "<h1>ZZZZ</h1>")
   (route/not-found "<h1>Page not found</h1>"))
@@ -82,8 +95,8 @@
       wrap-reload
       ring.middleware.params/wrap-params
       ring.middleware.keyword-params/wrap-keyword-params
-      wrap-json-response
       wrap-protected-routes
+      wrap-json-response
       ))
 (defonce server (jetty/run-jetty #'myapp {:port 8080 :join? false}))
 ;; (.stop server) and (.start server)
