@@ -92,7 +92,7 @@
 
 (def myapp
   (-> myroutes
-      (wrap-resource "../resources//public")
+      (wrap-resource "/public")
       (wrap-defaults api-defaults)
       wrap-reload
       ring.middleware.params/wrap-params
