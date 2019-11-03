@@ -7,6 +7,8 @@
    [ring.middleware.reload :refer [wrap-reload]]
    [hiccup.core :as hiccup]
    [ring.middleware.json :refer [wrap-json-response]]
+   [ring.middleware.resource :refer [wrap-resource]]
+   [ring.middleware.content-type :refer [wrap-content-type]]
    [user-management :as user]
    ))
 
@@ -40,16 +42,13 @@
 
 
 
-(defn -main []
-(println "HELLO"))
-
 
 (defn index [req]
-{:status 200
- :headers {"Content-Type" "text/html"}
- :body  (hiccup/html [:h1 "Hello Wld from H"])
- }
-)
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body  (hiccup/html [:h1 "Hello Wld from H"])
+   }
+  )
 
 
 (defn login [ {:keys [:params] :as req} ]
@@ -60,7 +59,7 @@
                  (ring.util.response/header "token" payload)
                  (ring.util.response/status (if payload 200 401))
                  )]
-    (clojure.pprint/pprint params)
+    ;; (clojure.pprint/pprint params)
     resp))    
 
 (defn api-call [ {:keys [:headers] :as req}]
@@ -77,7 +76,7 @@
         resp (-> (ring.util.response/response payload)
                  (ring.util.response/status 200))
         ]
-    (clojure.pprint/pprint decoded-token)
+    ;;(clojure.pprint/pprint decoded-token)
     resp
     ))
 
@@ -87,12 +86,13 @@
   (POST "/login" [] login)
   (GET "/get-user" [] get-user)
   (GET "/api-call" [] api-call)
-  (GET "/z" [] "<h1>ZZZZ</h1>")
-  (route/not-found "<h1>Page not found</h1>"))
+  (route/not-found "<h1>Sage not found</h1>")
+  )
 
 
 (def myapp
   (-> myroutes
+      (wrap-resource "../resources//public")
       (wrap-defaults api-defaults)
       wrap-reload
       ring.middleware.params/wrap-params
@@ -103,4 +103,8 @@
 (defonce server (jetty/run-jetty #'myapp {:port 8080 :join? false}))
 ;; (.stop server) and (.start server)
 
-(.start server)
+(defn -main []
+  (println "HELLO")
+  (.start server))
+
+
